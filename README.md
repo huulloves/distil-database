@@ -21,6 +21,7 @@ distil helps anyone — no matter their education or language level — access a
 most data tools assume you’re already a data expert. distil flips that. it says:
 
 > “if you care enough to ask, you deserve to understand.”
+
 most importantly, the **distil database** is a primary module for the aimee-notebook. 
 the distill functionality of the aimee notebook will be made using the **distil database** logic and code.
 that's the goal anyways.
