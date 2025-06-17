@@ -1,4 +1,4 @@
-# distil
+# **distil**
 
 **distil** is a local-first python tool built to connect to datasets and distill complex, quantified data into clear, human-readable insight — in the user's voice, on their terms.
 
