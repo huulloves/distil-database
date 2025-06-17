@@ -2,7 +2,7 @@
 
 **distil** is a local-first python tool built to connect to datasets and distill complex, quantified data into clear, human-readable insight — in the user's voice, on their terms.
 
-## ✨ purpose
+## purpose
 **distil** helps anyone — no matter their education or language level — access and understand data in a way that makes sense to them. it doesn’t gatekeep info. it lets you ask questions, get summaries, and trace patterns, while honoring how *you* think and speak.
 
 ## 💡 key features (planned)
