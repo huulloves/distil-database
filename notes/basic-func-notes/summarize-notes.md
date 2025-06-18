@@ -1,5 +1,5 @@
 # distil "summarize functionality"
-**summarize()** — the functionality that allows users to retrieve summarized data, trends, and other distilled information. these insights are presented in english or another natural language.
+`summarize()` — the functionality that allows users to retrieve summarized data, trends, and other distilled information. these insights are presented in english or another natural language.
 
 - converts raw or queried data into natural-language insight
 - strips away abstraction and technical jargon
@@ -43,7 +43,7 @@ def summarize(data, context=None, granularity='high') -> str:
 4. format output: ensure the summary is clear, concise, and contextualized
 
 ### high-level example
-input:
+inputs:
 - dataset: monthly sales data for 2024
 - context: low
 - granularity: low
@@ -57,5 +57,5 @@ output:
 - integrate with visualization modules for graphical summaries
 
 ## related functions/see also
-- distill() in distill-notes.md
-- track() in track-notes.md
+- `distill()` in distill-notes.md
+- `track()` in track-notes.md

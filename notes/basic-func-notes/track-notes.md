@@ -1,5 +1,5 @@
 # distil "track functionality"
-**track()** — the functionality that allows users to identify implicit trends and connections between data and datasets.
+`track()` — the functionality that allows users to identify implicit trends and connections between data and datasets.
 
 - detects implicit patterns, trends, and anomalies
 - links across datasets and data sources
@@ -22,7 +22,7 @@ def track(data, context=None, method='auto') -> dict:
     tracks implicit trends, patterns, and connections in the provided data
     - data: the dataset or collection of datasets to analyze
     - context: optional context or user preferences for tracking
-    - method: tracking approach ('auto', 'temporal', 'categorical', 'correlative')
+    - method: tracking approach (`auto`, `temporal`, `categorical`, `correlative`)
     returns: a dictionary of discovered threads, patterns, and anomalies
     """
 
@@ -63,5 +63,5 @@ output:
 - integrate with visualization modules for thread mapping
 
 ## related functions/see also
-- distill() in distill-notes.md
-- summarize() in summarize-notes.md
+- `distill()` in distill-notes.md
+- `summarize()` in summarize-notes.md
