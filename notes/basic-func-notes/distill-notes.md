@@ -26,7 +26,7 @@ def distill(data, filters=None, user_profile=None) -> str:
 ### outputs 
 - returns human-readable summary string or structured report
 
-### edge case handling
+## edge case handling
 - if no data, return "no trends or relationships found"
 - if conflicting trends, return all trends AND note of uncertainty
 

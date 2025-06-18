@@ -10,6 +10,8 @@
 - **summary:** a concise, high-level description of the main patterns, statistics, or findings in the data
 - **trend:** a general direction in which something is developing or changing, as observed in the data
 
+---
+
 ## potential function signature
 
 > ```python
