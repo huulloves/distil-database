@@ -50,7 +50,7 @@ def create_tables(conn, headers):
             FOREIGN KEY(state_id) REFERENCES state(state_id)
         )''')
         # passengers table: all columns except city and state
-        passenger_headers = [h for h in headers if h not in ('city', 'state')]
+        passenger_headers = [h for h in headers if h not in ('city', 'country')]
         passenger_cols_sql = ', '.join([f'"{col}" TEXT' for col in passenger_headers])
         cursor.execute(f'''CREATE TABLE IF NOT EXISTS passengers (
             passenger_id INTEGER PRIMARY KEY,
@@ -71,17 +71,22 @@ def inject(conn, headers, rows):
     """
     try:
         cursor = conn.cursor()
+        # print headers for debug
+        print("[inject] headers", headers)
+        if city_idx is None or country_idx is None:
+            print("[inject] error: 'city' or 'country' column not found in headers.")
+            return False
         city_idx = headers.index('city') if 'city' in headers else None
-        state_idx = headers.index('state') if 'state' in headers else None
-        passenger_indices = [i for i in range(len(headers)) if i not in (city_idx, state_idx)]
+        country_idx = headers.index('country') if 'country' in headers else None
+        passenger_indices = [i for i in range(len(headers)) if i not in (city_idx, country_idx)]
         passenger_headers = [headers[i] for i in passenger_indices]
 
         for row in rows:
             city = row[city_idx]
-            state = row[state_idx]
+            country = row[country_idx]
             # state
-            cursor.execute('INSERT OR IGNORE INTO state (state_name) VALUES (?)', (state,))
-            cursor.execute('SELECT state_id FROM state WHERE state_name=?', (state,))
+            cursor.execute('INSERT OR IGNORE INTO state (state_name) VALUES (?)', (country,))
+            cursor.execute('SELECT state_id FROM state WHERE state_name=?', (country,))
             state_id = cursor.fetchone()[0]
             # city
             cursor.execute('INSERT OR IGNORE INTO city (city_name) VALUES (?)', (city,))
@@ -181,7 +186,7 @@ def query_table(table_name):
 
 
 def main():
-    # for cli testing
+    # for cli testing, database.py can be run directly
     import sys
     if len(sys.argv) < 2:
         print("usage: python database.py <csv_filename>")
