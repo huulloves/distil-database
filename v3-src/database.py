@@ -1,6 +1,6 @@
 import sqlite3
 import csv
-import controller as ctrl
+
 def clean_data(filename):
     """
     reads csv, cleans data, and returns normalized headers, cleaned rows, and a success boolean.
@@ -50,7 +50,7 @@ def create_tables(conn, headers):
             FOREIGN KEY(state_id) REFERENCES state(state_id)
         )''')
         # passengers table: all columns except city and state
-        passenger_headers = [h for h in headers if h not in ('city', 'country')]
+        passenger_headers = [h for h in headers if h not in ('city', 'state')]
         passenger_cols_sql = ', '.join([f'"{col}" TEXT' for col in passenger_headers])
         cursor.execute(f'''CREATE TABLE IF NOT EXISTS passengers (
             passenger_id INTEGER PRIMARY KEY,
@@ -64,6 +64,14 @@ def create_tables(conn, headers):
         print(f"[create_tables] error: {e}")
     return success
 
+def alter_tables(conn):
+    """
+    placeholder for altering tables (e.g., adding foreign keys if needed).
+    returns success boolean.
+    """
+    print("[debug] alter_tables called (no action needed for SQLite).")
+    return True
+
 def inject(conn, headers, rows):
     """
     injects cleaned data into the normalized tables.
@@ -71,22 +79,17 @@ def inject(conn, headers, rows):
     """
     try:
         cursor = conn.cursor()
-        # print headers for debug
-        print("[inject] headers", headers)
-        if city_idx is None or country_idx is None:
-            print("[inject] error: 'city' or 'country' column not found in headers.")
-            return False
         city_idx = headers.index('city') if 'city' in headers else None
-        country_idx = headers.index('country') if 'country' in headers else None
-        passenger_indices = [i for i in range(len(headers)) if i not in (city_idx, country_idx)]
+        state_idx = headers.index('state') if 'state' in headers else None
+        passenger_indices = [i for i in range(len(headers)) if i not in (city_idx, state_idx)]
         passenger_headers = [headers[i] for i in passenger_indices]
 
         for row in rows:
             city = row[city_idx]
-            country = row[country_idx]
+            state = row[state_idx]
             # state
-            cursor.execute('INSERT OR IGNORE INTO state (state_name) VALUES (?)', (country,))
-            cursor.execute('SELECT state_id FROM state WHERE state_name=?', (country,))
+            cursor.execute('INSERT OR IGNORE INTO state (state_name) VALUES (?)', (state,))
+            cursor.execute('SELECT state_id FROM state WHERE state_name=?', (state,))
             state_id = cursor.fetchone()[0]
             # city
             cursor.execute('INSERT OR IGNORE INTO city (city_name) VALUES (?)', (city,))
@@ -125,68 +128,18 @@ def inject_dataset(conn, filename):
     if not success:
         print("[database] error: creating tables failed.")
         return False
-    
-    print("[database] tables created successfully, now injecting data.")
+
+    print("[database] altering alter_tables(conn)")
+    success = alter_tables(conn)
+    if not success:
+        print("[database] error: altering tables failed.")
+        return False
 
     print("[database] injecting inject(conn, headers, rows)")
     success = inject(conn, headers, rows)
     return success
 
-def query_all_data():
-    """
-    placeholder for SELECT * from dataset.
-    queries all data from dataset table and prints it.
-    """
-    db_path = 'database-content.db'
-    conn = sqlite3.connect(db_path)
-    print("[query_all_data] connecting to database.")
-    if not conn:
-        print("[query_all_data] error: could not connect to database.")
-        return False
-    else:
-        cursor = conn.cursor()
-        print("[query_all_data] querying all data.")
-
-        cursor.execute('SELECT * from dataset')
-        rows = cursor.fetchall()
-        if not rows:
-            print("[query_all_data] no data found in main dataset.")
-            return False
-        else:
-            print(f"[query_all_data] found {len(rows)} rows in dataset table.")
-            for row in rows:
-                print(row)
-    conn.close()
-
-def query_table(table_name):
-    """
-    placeholder for SELECT * from table.
-    queries all data from desired table and prints it.
-    """
-    db_path = 'database-content.db'
-    conn = sqlite3.connect(db_path)
-    print("[query_all_data] connecting to database.")
-    if not conn:
-        print("[query_all_data] error: could not connect to database.")
-        return False
-    else:
-        cursor = conn.cursor()
-        print("[query_all_data] querying all data from selected table.")
-
-        cursor.execute('SELECT * FROM passengers')
-        rows = cursor.fetchall()
-        if not rows:
-            print("[query_all_data] no data found in passengers table.")
-            return False
-        else:
-            print(f"[query_all_data] found {len(rows)} rows in passengers table.")
-            for row in rows:
-                print(row)
-    conn.close()
-
-
 def main():
-    # for cli testing, database.py can be run directly
     import sys
     if len(sys.argv) < 2:
         print("usage: python database.py <csv_filename>")
