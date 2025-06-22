@@ -30,9 +30,9 @@ def clean_data(filename):
         print(f"[clean_data] error: {e}")
         return norm_headers, cleaned_rows, success
 
-def create_tables(conn, headers):
+def create_tables(conn, headers, main_table_name):
     """
-    creates 3nf tables: country, city, location, and passengers (with dynamic columns).
+    creates 3nf tables: country, city, location, and a main table (with dynamic columns).
     returns success boolean.
     """
     success = False
@@ -49,16 +49,16 @@ def create_tables(conn, headers):
             FOREIGN KEY(city_id) REFERENCES city(city_id),
             FOREIGN KEY(country_id) REFERENCES country(country_id)
         )''')
-        # passengers table: all columns except city and country
-        passenger_headers = [h for h in headers if h not in ('city', 'country')]
-        passenger_cols_sql = ', '.join([f'"{col}" TEXT' for col in passenger_headers])
-        cursor.execute(f'''CREATE TABLE IF NOT EXISTS passengers (
-            passenger_id INTEGER PRIMARY KEY,
+        # main table: all columns except city and country
+        main_headers = [h for h in headers if h not in ('city', 'country')]
+        cols_sql = ', '.join([f'"{col}" TEXT' for col in main_headers])
+        cursor.execute(f'''CREATE TABLE IF NOT EXISTS "{main_table_name}" (
+            {main_table_name}_id INTEGER PRIMARY KEY,
             location_id INTEGER,
-            {passenger_cols_sql},
+            {cols_sql},
             FOREIGN KEY(location_id) REFERENCES location(location_id)
         )''')
-        print("[debug] tables created.")
+        print(f"[debug] main table '{main_table_name}' and supporting tables created.")
         success = True
     except Exception as e:
         print(f"[create_tables] error: {e}")
@@ -108,19 +108,20 @@ def inject(conn, headers, rows):
         print(f"[inject] error: {e}")
         return False
 
-def inject_dataset(conn, filename):
+def inject_dataset(conn, filename, main_table_name):
     """
     main orchestrator: clean data, create/alter tables, and inject.
     returns success boolean.
     """
     print("[database] inject_dataset called.")
+    print(f"[database] cleaning data from {filename}.")
     headers, rows, success = clean_data(filename)
     if not success:
         print("[database] error: cleaning data failed.")
         return False
 
-    print("[database] creating tables create_tables(conn, headers)")
-    success = create_tables(conn, headers)
+    print("[database] creating tables create_tables(conn, headers, main_table_name)")
+    success = create_tables(conn, headers, main_table_name)
     if not success:
         print("[database] error: creating tables failed.")
         return False
@@ -146,24 +147,55 @@ def drop_all_tables(conn):
 def main():
     # for cli testing, database.py can be run directly
     import sys
-    if len(sys.argv) < 2:
-        print("[main] usage: python database.py <csv_filename>")
-        return
-    filename = sys.argv[1]
-    db_path = 'database-content.db'
-    conn = sqlite3.connect(db_path)
+    import os
+    succcess = False
 
-    # Drop all tables for a clean test run
-    print("[main] dropping all tables for a clean test run.")
-    drop_all_tables(conn)
- 
-    # code for injecting dataset
-    print(f"[main] injecting dataset from {filename} into database {db_path}.")
-    success = inject_dataset(conn, filename)
-    print(f"[main] data injection successful?: {success}")
+    try:
+        if len(sys.argv) < 2:
+            print("[main] usage: python database.py <csv_filename>")
+            success = False
+            return success
+        filename = sys.argv[1]
+        db_path = 'database-content.db'
+        conn = sqlite3.connect(db_path)
+
+        if conn is None:
+            print("[main] error: could not connect to database.")
+            success = False
+            return success
+        else:
+            print(f"[main] connected to database at {db_path}.")
+            
+
+        try:
+            # Drop all tables for a clean test run
+            print("[main] dropping all tables for a clean test run.")
+            drop_all_tables(conn)
+        except Exception as e:
+            print(f"[main] error dropping tables: {e}")
+            success = False
+            return success
+
+        try:
+             # prompt user to name main tables of dataset
+            default_table = os.path.splitext(os.path.basename(filename))[0]
+            user_table = input(f"enter main table name (default: {default_table}): ").strip()
+            main_table_name = user_table if user_table else default_table
+        except Exception as e:
+            print(f"\n[main] name not provided or error: {e}")
+        finally:
+             # code for injecting dataset
+            print(f"[main] injecting dataset from {filename} into database {db_path}.")
+            success = inject_dataset(conn, filename, main_table_name)
+            print(f"[main] data injection successful?: {success}")
+            
+    except Exception as e:
+        print(f"[main] error: {e}")
+        succcess = False
+        return
 
     # menu options for CLI interaction
-    while True:
+    while succcess is True:
         print("\nchoose an option:")
         print("1. list all tables")
         print("2. query a specific table")
