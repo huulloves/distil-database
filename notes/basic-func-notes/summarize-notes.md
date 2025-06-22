@@ -14,7 +14,7 @@
 
 ## potential function signature
 
-> ```python
+```python
 def summarize(data, context=None, granularity='high') -> str:
     """
     summarizes the provided data into a human-readable insight
@@ -23,13 +23,14 @@ def summarize(data, context=None, granularity='high') -> str:
     - granularity: level of detail ('high', 'medium', 'low')
     returns: a summary string
     """
+``` 
 
-### inputs
+## inputs
 - `data`: the dataset or query result to be summarized
 - `context`: (optional) user or application context for personalized summaries
 - `granularity`: (optional) level of detail for the summary
 
-### outputs
+## outputs
 - returns a human-readable summary string
 
 ## edge case handling

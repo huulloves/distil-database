@@ -12,18 +12,19 @@
 
 ## potential function signature
 
->  ```python
+```python
 def distill(data, filters=None, user_profile=None) -> str:
     """
     Synthesizes and presents distilled insights from the dataset.
     """
+```
 
-### inputs
+## inputs
 - `data` - the dataset or query to be distilled
 - `filters` - optional filiters to narrow focus of distillation
 - `user_profile` - eventually ai-generated user_profile that provides user context for more personalized insights
 
-### outputs 
+## outputs 
 - returns human-readable summary string or structured report
 
 ## edge case handling

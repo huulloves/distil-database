@@ -16,7 +16,7 @@
 
 ## potential function signature
 
-> ```python
+```python
 def track(data, context=None, method='auto') -> dict:
     """
     tracks implicit trends, patterns, and connections in the provided data
@@ -25,13 +25,14 @@ def track(data, context=None, method='auto') -> dict:
     - method: tracking approach (`auto`, `temporal`, `categorical`, `correlative`)
     returns: a dictionary of discovered threads, patterns, and anomalies
     """
+```
 
-### inputs
+## inputs
 - `data`: the dataset or collection of datasets to be tracked
 - `context`: (optional) user or application context for personalized tracking
 - `method`: (optional) tracking approach or algorithm to use
 
-### outputs
+## outputs
 - returns a dictionary containing discovered threads, patterns, and anomalies
 
 ## edge case handling
