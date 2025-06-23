@@ -145,70 +145,60 @@ def drop_all_tables(conn):
     print("[debug] all tables dropped.")
 
 def main():
-    # for cli testing, database.py can be run directly
     import sys
     import os
-    succcess = False
+    success = False
 
+    if len(sys.argv) < 2:
+        print("[main] usage: python database.py <csv_filename>")
+        return
+    filename = sys.argv[1]
+    db_path = 'database-content.db'
+    conn = sqlite3.connect(db_path)
+
+    if conn is None:
+        print("[main] error: could not connect to database.")
+        return
+    print(f"[main] connected to database at {db_path}.")
+
+    # Drop all tables for a clean test run
     try:
-        if len(sys.argv) < 2:
-            print("[main] usage: python database.py <csv_filename>")
-            success = False
-            return success
-        filename = sys.argv[1]
-        db_path = 'database-content.db'
-        conn = sqlite3.connect(db_path)
-
-        if conn is None:
-            print("[main] error: could not connect to database.")
-            success = False
-            return success
-        else:
-            print(f"[main] connected to database at {db_path}.")
-            
-
-        try:
-            # Drop all tables for a clean test run
-            print("[main] dropping all tables for a clean test run.")
-            drop_all_tables(conn)
-        except Exception as e:
-            print(f"[main] error dropping tables: {e}")
-            success = False
-            return success
-
-        try:
-             # prompt user to name main tables of dataset
-            default_table = os.path.splitext(os.path.basename(filename))[0]
-            user_table = input(f"enter main table name (default: {default_table}): ").strip()
-            main_table_name = user_table if user_table else default_table
-        except Exception as e:
-            print(f"\n[main] name not provided or error: {e}")
-        finally:
-             # code for injecting dataset
-            print(f"[main] injecting dataset from {filename} into database {db_path}.")
-            success = inject_dataset(conn, filename, main_table_name)
-            print(f"[main] data injection successful?: {success}")
-            
+        print("[main] dropping all tables for a clean test run.")
+        drop_all_tables(conn)
     except Exception as e:
-        print(f"[main] error: {e}")
-        succcess = False
+        print(f"[main] error dropping tables: {e}")
+        conn.close()
+        return
+
+    # Prompt user for main table name
+    default_table = os.path.splitext(os.path.basename(filename))[0]
+    user_table = input(f"enter main table name (default: {default_table}): ").strip()
+    main_table_name = user_table if user_table else default_table
+
+    # Inject dataset
+    print(f"[main] injecting dataset from {filename} into database {db_path}.")
+    success = inject_dataset(conn, filename, main_table_name)
+    print(f"[main] data injection successful?: {success}")
+
+    if not success:
+        conn.close()
         return
 
     # menu options for CLI interaction
-    while succcess is True:
+    while success:
         print("\nchoose an option:")
         print("1. list all tables")
         print("2. query a specific table")
-        print("3. list all tables")
+        print("3. query main table")
         print("4. quit")
-        choice = input("enter option number: ").strip()
+        choice = input("[main] enter option number: ").strip()
         if choice == "1":
             cursor = conn.cursor()
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
             tables = [row[0] for row in cursor.fetchall()]
             print("[main] tables in database:", tables)
         elif choice == "2":
-            table_name = input("[main] Enter table name: ").strip()
+            table_name = input("[main] enter table name: ").strip()
             cursor = conn.cursor()
             try:
                 cursor.execute(f'SELECT * FROM "{table_name}"')
@@ -223,18 +213,18 @@ def main():
                 print(f"[main] error querying table '{table_name}': {e}")
         elif choice == "3":
             cursor = conn.cursor()
-            print("[main] listing all tables in database.")
+            print(f"[main] listing all rows in main table '{main_table_name}'.")
             try:
-                cursor.execute("SELECT * FROM dataset;")
+                cursor.execute(f'SELECT * FROM "{main_table_name}";')
                 rows = cursor.fetchall()
                 if not rows:
-                    print("[main] no data found in dataset table.")
+                    print(f"[main] no data found in {main_table_name} table.")
                 else:
-                    print("[main] rows in dataset table:")
+                    print(f"[main] rows in {main_table_name} table:")
                     for row in rows:
                         print(row)
             except Exception as e:
-                print(f"[main] error querying dataset table: {e}")
+                print(f"[main] error querying {main_table_name} table: {e}")
         elif choice == "4":
             print("[main] exiting.")
             break
@@ -244,6 +234,4 @@ def main():
     conn.close()
 
 if __name__ == "__main__":
-    # run main function as script executed directly
-    print("[main] running database.py.")
     main()
