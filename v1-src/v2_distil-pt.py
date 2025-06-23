@@ -3,8 +3,8 @@
 import tkinter as tk
 from tkinter import filedialog
 import sqlite3
-from inject import ask
-from v2_display import display_output
+from v1_inject import ask
+from v2_display import display
 
 DB_PATH = 'database-content.db'
 
@@ -51,7 +51,7 @@ def distill_event(text_widget):
                 content = [list(row) for row in cursor.fetchall()]
                 if content:
                     # Combine column names and rows for display
-                    output_text = display_output([columns] + content)
+                    output_text = display([columns] + content)
                 else:
                     output_text = "[distill] No data found in dataset."
                 print("[distill] content retrieved from database...")
