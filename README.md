@@ -1,9 +1,9 @@
-# distil
+# distil database
 
-**distil** will be a local-first python tool built to connect to datasets and distill complex, quantified data into clear, human-readable insight... in the user's voice, on their terms.
+**distil database** will be a local-first python tool built to connect to datasets and distill complex, quantified data into clear, human-readable insight... in the user's voice, on their terms.
 
 ## purpose
-**distil** will, hopefully, server anyone — no matter their education or language level — access and understand data in a way that makes sense to them. 
+**distil database** will, hopefully, server anyone — no matter their education or language level — access and understand data in a way that makes sense to them. 
 it won’t gatekeep info. 
 it will let you ask questions, get summaries, and trace patterns, while honoring how *you* think and speak.
 
@@ -18,12 +18,12 @@ it will let you ask questions, get summaries, and trace patterns, while honoring
 
 ## why it exists
 most data tools assume you’re already a data expert. 
-**distil** flips that. it says:
+**distil database** flips that. it says:
 
 > *“if you care enough to ask, you deserve to understand.”*
 
-most importantly, **distil** will become a primary module for the aimee-notebook. 
-the **distil** functionality of the aimee notebook will be made using *distil* logic and code.
+most importantly, **distil database** will become a primary module for the aimee-notebook. 
+the **distil database** functionality of the aimee notebook will be made using *distil* logic and code.
 that's the goal anyways.
 
 this project centers:
