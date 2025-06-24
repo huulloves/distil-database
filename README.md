@@ -1,10 +1,11 @@
 # distil database
 
-**distil database** will be a local-first python tool built to connect to datasets and distill complex, quantified data into clear, human-readable insight... in the user's voice, on their terms.
+**distil database** will be a local-first python tool built to connect to datasets and distill complex, quantified data into clear, human-readable insight.
 
 ## purpose
-**distil database** will, hopefully, server anyone — no matter their education or language level — access and understand data in a way that makes sense to them. 
-it won’t gatekeep info. 
+**distil database** will serve anyone — no matter their education or language level — access and understand data in a way that makes sense to them. 
+
+## eventual purpose
 it will let you ask questions, get summaries, and trace patterns, while honoring how *you* think and speak.
 
 ## 💡 planned key features
