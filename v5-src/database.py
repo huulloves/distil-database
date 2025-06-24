@@ -128,8 +128,8 @@ def inject_dataset(conn, filename, main_table_name):
     
     print("[database] tables created successfully, now injecting data.")
 
-    print("[database] injecting inject(conn, headers, rows)")
-    success = inject(conn, headers, rows)
+    print("[database] injecting inject(conn, headers, rows, main_table_name)")
+    success = inject(conn, headers, rows, main_table_name)
     return success
 
 def drop_all_tables(conn):
@@ -202,7 +202,7 @@ def main():
 
     # inject dataset
     print(f"[main] injecting dataset from {filename} into database {db_path}.")
-    success = inject(conn, headers, rows, main_table_name)    
+    success = inject_dataset(conn, filename, main_table_name)
     print(f"[main] data injection successful?: {success}")
 
     if not success:
