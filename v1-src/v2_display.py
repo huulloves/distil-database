@@ -1,4 +1,4 @@
-def display_output(rows):
+def display(rows):
     """
     Format dataset rows for display: one row per line, single space between rows.
     Also prints each row to the console with a line break.
