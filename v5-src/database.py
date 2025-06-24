@@ -144,7 +144,7 @@ def drop_all_tables(conn):
     conn.commit()
     print("[debug] all tables dropped.")
 
-def print_database_summary(conn):
+def print_database_summary(conn, main_table_name):
     cursor = conn.cursor()
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     tables = [row[0] for row in cursor.fetchall()]
@@ -168,6 +168,34 @@ def print_database_summary(conn):
                 print(f"      {row}")
         else:
             print("    (no data)")
+
+    # aggregates from main table
+    print("\n[summary] aggregates from main table:")
+    if main_table_name and main_table_name in tables:
+        # total number of customers (rows in main table)
+        cursor.execute(f'SELECT COUNT(*) FROM "{main_table_name}"')
+        total_customers = cursor.fetchone()[0]
+        print(f"\n[summary] total number of customers: {total_customers}")
+
+        # most common country of origin
+        # joining main table -> location -> country
+        try:
+            cursor.execute(f'''
+                SELECT country.country_name, COUNT(*) as cnt
+                FROM "{main_table_name}"
+                JOIN location ON "{main_table_name}".location_id = location.location_id
+                JOIN country ON location.country_id = country.country_id
+                GROUP BY country.country_name
+                ORDER BY cnt DESC
+                LIMIT 1
+            ''')
+            result = cursor.fetchone()
+            if result:
+                print(f"[summary] most common country of origin: {result[0]} ({result[1]} customers)")
+            else:
+                print("[summary] could not determine most common country.")
+        except Exception as e:
+            print(f"[summary] error aggregating country data: {e}")
 
 def main():
     import sys
@@ -253,7 +281,7 @@ def main():
                 print(f"[main] error querying {main_table_name} table: {e}")
         elif choice == "4":
             print("[main] printing database summary.")
-            print_database_summary(conn)
+            print_database_summary(conn, main_table_name)
         elif choice == "5":
             print("[main] exiting.")
             break
