@@ -64,7 +64,7 @@ def create_tables(conn, headers, main_table_name):
         print(f"[create_tables] error: {e}")
     return success
 
-def inject(conn, headers, rows):
+def inject(conn, headers, rows, main_table_name):
     """
     injects cleaned data into the normalized tables.
     returns success boolean.
@@ -77,8 +77,8 @@ def inject(conn, headers, rows):
         if city_idx is None or country_idx is None:
             print("[inject] error: 'city' or 'country' column not found in headers.")
             return False
-        passenger_indices = [i for i in range(len(headers)) if i not in (city_idx, country_idx)]
-        passenger_headers = [headers[i] for i in passenger_indices]
+        main_indices = [i for i in range(len(headers)) if i not in (city_idx, country_idx)]
+        main_headers = [headers[i] for i in main_indices]
 
         for row in rows:
             city = row[city_idx]
@@ -95,14 +95,14 @@ def inject(conn, headers, rows):
             cursor.execute('INSERT OR IGNORE INTO location (city_id, country_id) VALUES (?, ?)', (city_id, country_id))
             cursor.execute('SELECT location_id FROM location WHERE city_id=? AND country_id=?', (city_id, country_id))
             location_id = cursor.fetchone()[0]
-            # passengers
-            passenger_values = [row[i] for i in passenger_indices]
-            placeholders = ', '.join(['?'] * (1 + len(passenger_headers)))
-            columns_str = ', '.join(['location_id'] + [f'"{col}"' for col in passenger_headers])            
-            cursor.execute(f'INSERT INTO passengers ({columns_str}) VALUES ({placeholders})', [location_id] + passenger_values)
+            # main table
+            main_values = [row[i] for i in main_indices]
+            placeholders = ', '.join(['?'] * (1 + len(main_headers)))
+            columns_str = ', '.join(['location_id'] + [f'"{col}"' for col in main_headers])            
+            cursor.execute(f'INSERT INTO {main_table_name} ({columns_str}) VALUES ({placeholders})', [location_id] + main_values)
 
         conn.commit()
-        print(f"[inject] injected {len(rows)} rows into country, city, location, and passengers tables (3NF).")
+        print(f"[inject] injected {len(rows)} rows into country, city, location, and main tables (3NF).")
         return True
     except Exception as e:
         print(f"[inject] error: {e}")
@@ -144,6 +144,31 @@ def drop_all_tables(conn):
     conn.commit()
     print("[debug] all tables dropped.")
 
+def print_database_summary(conn):
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = [row[0] for row in cursor.fetchall()]
+    print("\n[summary] database contains the following tables:")
+    for table in tables:
+        print(f"\n  table: {table}")
+        # get columns
+        cursor.execute(f'PRAGMA table_info("{table}")')
+        columns = [info[1] for info in cursor.fetchall()]
+        print(f"    columns: {columns}")
+        # get row count
+        cursor.execute(f'SELECT COUNT(*) FROM "{table}"')
+        count = cursor.fetchone()[0]
+        print(f"    row count: {count}")
+        # print first 3 rows as a sample
+        cursor.execute(f'SELECT * FROM "{table}" LIMIT 3')
+        rows = cursor.fetchall()
+        if rows:
+            print("    sample rows:")
+            for row in rows:
+                print(f"      {row}")
+        else:
+            print("    (no data)")
+
 def main():
     import sys
     import os
@@ -161,7 +186,7 @@ def main():
         return
     print(f"[main] connected to database at {db_path}.")
 
-    # Drop all tables for a clean test run
+    # drop all tables for a clean test run
     try:
         print("[main] dropping all tables for a clean test run.")
         drop_all_tables(conn)
@@ -170,14 +195,14 @@ def main():
         conn.close()
         return
 
-    # Prompt user for main table name
+    # prompt user for main table name
     default_table = os.path.splitext(os.path.basename(filename))[0]
     user_table = input(f"enter main table name (default: {default_table}): ").strip()
     main_table_name = user_table if user_table else default_table
 
-    # Inject dataset
+    # inject dataset
     print(f"[main] injecting dataset from {filename} into database {db_path}.")
-    success = inject_dataset(conn, filename, main_table_name)
+    success = inject(conn, headers, rows, main_table_name)    
     print(f"[main] data injection successful?: {success}")
 
     if not success:
@@ -190,7 +215,8 @@ def main():
         print("1. list all tables")
         print("2. query a specific table")
         print("3. query main table")
-        print("4. quit")
+        print("4. database summary")
+        print("5. quit")
         choice = input("[main] enter option number: ").strip()
         if choice == "1":
             cursor = conn.cursor()
@@ -226,6 +252,9 @@ def main():
             except Exception as e:
                 print(f"[main] error querying {main_table_name} table: {e}")
         elif choice == "4":
+            print("[main] printing database summary.")
+            print_database_summary(conn)
+        elif choice == "5":
             print("[main] exiting.")
             break
         else:
