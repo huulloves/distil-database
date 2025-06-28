@@ -1,59 +1,62 @@
-"""
-    IN-PROGRESS
-    reads a CSV file, cleans the data, and normalizes it.
-"""
-
-import csv
+import pandas as pd
+import re
 
 def clean_data(filename):
-    ''' 
-        cleaning header data    
-    '''
-    norm_headers = []
-    cleaned_rows = []
-    success = False
+    """
+    read, clean, and normalize a CSV dataset using pandas.
+    detects extensions in phone columns and creates separate ext columns.
+    """
 
     try:
         print("\n[cleaner] starting data cleaning")
-        with open(filename, newline='', encoding='utf-8') as csvfile:
-            reader = csv.reader(csvfile)
-            headers = next(reader, None)
-            if not headers:
-                print("    no headers found in CSV.")
-                return norm_headers, cleaned_rows, success
-            
-            norm_headers = clean_header(headers)
-            rows, success = clean_phonenumbers(rows)
 
-            for row in reader:
-                cleaned_row = [cell.strip() if isinstance(cell, str) else '' for cell in row]
-                cleaned_rows.append(cleaned_row)
-        if not cleaned_rows:
-            print("    no data rows found in CSV.")
-        else:
-            success = True
-            print(f"    identified headers: {norm_headers}")
-            print(f"    number of data rows: {len(cleaned_rows)}")
-            print("    data cleaning complete")
-        return norm_headers, cleaned_rows, success
+        df = pd.read_csv(filename, encoding='utf-8')
+        df.drop_duplicates(inplace=True)
+
+        # normalize column headers
+        df.columns = [col.strip().lower().replace(' ', '_') for col in df.columns]
+
+        # find phone columns
+        phone_cols = [col for col in df.columns if 'phone' in col]
+        ext_cols = []
+
+        # regex to find extension patterns like x123, ext123, ext.123, extension 123, etc.
+        ext_pattern = re.compile(r'(?:ext\.?|x|extension)\s*\.?:?\s*(\d{1,5})', re.IGNORECASE)
+
+        for col in phone_cols:
+            ext_col_name = f"{col}_ext"
+            ext_cols.append(ext_col_name)
+
+            # extract extensions into new column
+            def extract_extension(phone_str):
+                if not isinstance(phone_str, str):
+                    return ''
+                match = ext_pattern.search(phone_str)
+                return match.group(1) if match else ''
+
+            df[ext_col_name] = df[col].apply(extract_extension)
+
+            # clean phone number by removing non-digit chars and extension text
+            def clean_phone(phone_str):
+                if not isinstance(phone_str, str):
+                    return ''
+                # remove extension part from phone string
+                phone_str = ext_pattern.sub('', phone_str)
+                # keep only digits
+                digits = re.sub(r'\D', '', phone_str)
+                return digits
+
+            df[col] = df[col].apply(clean_phone)
+
+        # append extension columns to headers
+        final_headers = list(df.columns)
+
+        print(f"    [cleaner] columns after processing extensions: {final_headers}")
+        print(f"    [cleaner] number of rows: {len(df)}")
+        print("    [cleaner] data cleaning complete")
+
+        return final_headers, df.values.tolist(), True
+
     except Exception as e:
-        print(f"    [warning] {e}")
-        return norm_headers, cleaned_rows, success
-    
-def clean_header(headers):
-
-    norm_headers = [h.strip().lower().replace(' ', '_') for h in headers]
-
-    return norm_headers
-
-def clean_phonenumbers(rows):
-    ''' 
-        clean phone numbers
-    '''
-    norm_numbers = []
-    cleaned_numbers = []
-    success = False
-
-
-
-    return
+        print(f"    [error] {e}")
+        return [], [], False

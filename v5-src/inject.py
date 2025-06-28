@@ -7,6 +7,7 @@ def inject(conn, headers, rows, main_table_name):
     inserts cleaned data into country, city, location, and main tables (3NF).
     returns True on success, False on error.
     """
+    
     try:
         print("\n[inject()] starting...")
         cursor = conn.cursor()
