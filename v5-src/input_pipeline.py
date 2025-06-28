@@ -11,7 +11,7 @@ def dataset_pipeline(conn, filename, main_table_name):
     orchestrates the data pipeline: cleaning, table creation, and data injection.
     returns True on success, False on error.
     """
-    print("\n[dataset_pipeline()] pipeline started.")
+    print("\n[dataset_pipeline()] starting...")
     headers, rows, success = clean_data(filename)
     if not success:
         print("     [warning] cleaning data failed.")

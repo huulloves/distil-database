@@ -8,7 +8,7 @@ def clean_data(filename):
     """
 
     try:
-        print("\n[cleaner] starting data cleaning")
+        print("\n[clean_data()] starting...")
 
         df = pd.read_csv(filename, encoding='utf-8')
         df.drop_duplicates(inplace=True)
@@ -51,9 +51,9 @@ def clean_data(filename):
         # append extension columns to headers
         final_headers = list(df.columns)
 
-        print(f"    [cleaner] columns after processing extensions: {final_headers}")
-        print(f"    [cleaner] number of rows: {len(df)}")
-        print("    [cleaner] data cleaning complete")
+        print(f"    columns after processing extensions: {final_headers}")
+        print(f"    number of rows: {len(df)}")
+        print("    data cleaning complete")
 
         return final_headers, df.values.tolist(), True
 
