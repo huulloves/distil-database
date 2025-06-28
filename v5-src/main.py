@@ -1,0 +1,62 @@
+''' 
+    handles setup, database setup, calls to pipeline, and closing
+'''
+import sys
+import os
+import sqlite3
+
+from cli import cli_menu, prompt_main_table_name
+from prepare import drop_tables
+from input_pipeline import dataset_pipeline
+
+def main():
+    """
+        main entry point: handles argument parsing, database connection, 
+        prompts for main table name, runs the data pipeline, and launches the CLI menu.
+    """
+
+    if len(sys.argv) < 2:
+        print("[main] usage: python database.py <csv_filename>")
+        return
+    filename = sys.argv[1]
+    db_path = 'database-content.db'
+
+    try:
+        conn = sqlite3.connect(db_path)
+        print(f"[main()] connected to database at {db_path}.")
+    except Exception as e:
+        print(f"    [warning] connecting to database --> {e}")
+        return
+
+    # drop tables to prepare for injection
+    try:
+        print("     dropping all tables for a clean test run.")
+        drop_tables(conn)
+    except Exception as e:
+        print(f"    [warning] dropping tables --> {e}")
+        conn.close()
+        return
+
+    # prompt for main table name
+    default_table = os.path.splitext(os.path.basename(filename))[0]
+    try:
+        main_table_name = prompt_main_table_name(default_table)
+    except Exception as e:
+        print(f"    [warning] prompting for main table name --> {e}")
+        conn.close()
+        return
+
+    # inject dataset
+    print(f"    injecting dataset from {filename} into database {db_path}.")
+    success = dataset_pipeline(conn, filename, main_table_name)
+
+    if not success:
+        conn.close()
+        return
+
+    print(f"    data injection successful?: {success}")
+    cli_menu(conn, main_table_name)
+    conn.close()
+
+if __name__ == "__main__":
+    main()
