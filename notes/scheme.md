@@ -24,4 +24,4 @@ customer (customer_id, first_name, last_name, company_id, email, website)
 # considerations as of 23june2025
 dynamically creating the correct tables with their respective columns is no small feat. i propose a more interactive interface which back-end that identifies all columns in the dataset and asks the user to identify which will become tables and which will become properties of a table.
 
-next **distil database** version will implement logic to give users control over table creation.
+from v4 version, next **distil database** version will implement logic to give users control over table creation.
