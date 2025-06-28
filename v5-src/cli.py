@@ -9,7 +9,7 @@ def prompt_main_table_name(default_table):
     prompt the user to enter a main table name, or use the default if left blank.
     """
     print("\n[prompt_main_table_name] prompting for main table name.")
-    user_table = input(f"\nenter main table name (default: {default_table}): ").strip()
+    user_table = input(f"\nenter main table name (default: {default_table}): ").strip().lower()
     return user_table if user_table else default_table
 
 def cli_menu(conn, main_table_name):
@@ -33,6 +33,9 @@ def cli_menu(conn, main_table_name):
             print("     tables:", tables)
         elif choice == "2":
             table_name = input("enter table name: ").strip()
+            if not table_name:
+                print("    table name cannot be empty.")
+                continue
             print(f"querying table '{table_name}'.")
             try:
                 cursor.execute(f'SELECT * FROM "{table_name}"')

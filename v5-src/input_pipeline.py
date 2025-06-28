@@ -1,5 +1,4 @@
 """
-    IN-PROGRESS - clean_data is being modified to handle phone number cleaning
     main orchestrator: clean data, create/alter tables, and inject.
     returns success boolean.
 """
