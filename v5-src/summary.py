@@ -33,7 +33,7 @@ def print_database_summary(conn, main_table_name):
         # total number of customers (rows in main table)
         cursor.execute(f'SELECT COUNT(*) FROM "{main_table_name}"')
         total_customers = cursor.fetchone()[0]
-        print(f"    total number of customers: {total_customers}")
+        print(f"    total number of customers is {total_customers}")
 
         # most common country of origin
         # joining main table -> location -> country
@@ -49,7 +49,7 @@ def print_database_summary(conn, main_table_name):
             ''')
             result = cursor.fetchone()
             if result:
-                print(f"    most common country of origin: {result[0]} ({result[1]} customers)")
+                print(f"    most common country of origin is {result[0]} with {result[1]} customers")
             else:
                 print("     [warning] could not determine most common country.")
         except Exception as e:
