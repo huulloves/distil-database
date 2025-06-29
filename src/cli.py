@@ -18,7 +18,7 @@ def cli_menu(conn, main_table_name):
     main cli menu loop for interacting with the database.
     """
     while True:
-        logging.info("choose an option:")
+        print("choose an option:")
         print("     1. list all tables")
         print("     2. query a specific table")
         print("     3. main table summary")
@@ -27,10 +27,10 @@ def cli_menu(conn, main_table_name):
         cursor = conn.cursor()
 
         if choice == "1":
-            logging.info("listing all tables in database.")
+            print("listing all tables in database.")
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
             tables = [row[0] for row in cursor.fetchall()]
-            logging.info(f"tables: {tables}")
+            print(f"tables: {tables}")
         elif choice == "2":
             table_name = input("enter table name: ").strip()
             if not table_name:
@@ -41,15 +41,15 @@ def cli_menu(conn, main_table_name):
                 cursor.execute(f'SELECT * FROM "{table_name}"')
                 rows = cursor.fetchall()
                 if not rows:
-                    logging.info(f"no data found in table '{table_name}'.")
+                    logging.warning(f"no data found in table '{table_name}'.")
                 else:
-                    logging.info(f"rows in '{table_name}':")
+                    print(f"rows in '{table_name}':")
                     for row in rows:
-                        logging.info(f"    {row}")
+                        print(f"    {row}")
             except Exception as e:
                 logging.error(f"error querying table '{table_name}' --> {e}")
         elif choice == "3":
-            logging.info("printing database summary.")
+            print("printing database summary.")
             print_database_summary(conn, main_table_name)
         elif choice == "4":
             logging.info("exiting.")
