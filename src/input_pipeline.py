@@ -2,9 +2,9 @@
     main orchestrator: clean data, create/alter tables, and inject.
     returns success boolean.
 """
-from cleaner import clean_data
-from prepare import create_tables
-from inject import inject
+from src.cleaner import clean_data
+from src.prepare import create_tables
+from src.inject import inject
 
 def dataset_pipeline(conn, filename, main_table_name):
     """

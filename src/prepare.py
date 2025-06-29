@@ -4,6 +4,7 @@
     returns success boolean.
 '''
 import logging
+logger = logging.getLogger(__name__)
 
 def drop_tables(conn):
     cursor = conn.cursor()
