@@ -4,6 +4,7 @@
 
 ## purpose
 **distil database** will serve anyone — no matter their education or language level — access and understand data in a way that makes sense to them. 
+will do so using natural language querying logic.
 
 ## eventual purpose
 it will let you ask questions, get summaries, and trace patterns, while honoring how *you* think and speak.
