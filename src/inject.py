@@ -9,7 +9,7 @@ def inject(conn, headers, rows, main_table_name):
         inserts cleaned data into country, city, location, and main tables (3NF).
         returns True on success, False on error.
     """
-    
+
     try:
         logging.info("[inject()] starting...")
         cursor = conn.cursor()
@@ -58,3 +58,4 @@ def inject(conn, headers, rows, main_table_name):
     except Exception as e:
         logging.warning(f"    [warning] {e}")
         return False
+    
