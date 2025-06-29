@@ -2,21 +2,23 @@
     injects cleaned data into the normalized tables. returns success boolean. 
 """
 
+import logging
+
 def inject(conn, headers, rows, main_table_name):
     """
-    inserts cleaned data into country, city, location, and main tables (3NF).
-    returns True on success, False on error.
+        inserts cleaned data into country, city, location, and main tables (3NF).
+        returns True on success, False on error.
     """
     
     try:
-        print("\n[inject()] starting...")
+        logging.info("[inject()] starting...")
         cursor = conn.cursor()
         city_idx = headers.index('city') if 'city' in headers else None
         country_idx = headers.index('country') if 'country' in headers else None
 
         # verify headers for debug
         if city_idx is None or country_idx is None:
-            print("     [warning] 'city' or 'country' column not found in headers.")
+            logging.warning("    'city' or 'country' column not found in headers.")
             return False
 
         main_indices = [i for i in range(len(headers)) if i not in (city_idx, country_idx)]
@@ -51,8 +53,8 @@ def inject(conn, headers, rows, main_table_name):
             )
 
         conn.commit()
-        print(f"    injected {len(rows)} rows into country, city, location, and main tables (3NF).")
+        logging.info(f"    injected {len(rows)} rows into country, city, location, and main tables (3NF).")
         return True
     except Exception as e:
-        print(f"    [warning] {e}")
+        logging.warning(f"    [warning] {e}")
         return False
