@@ -44,11 +44,11 @@ def main():
         return
 
     # prompt for main table name
-    default_table = os.path.splitext(os.path.basename(filename))[0]
+    default_table = "table1"
     try:
         main_table_name = prompt_main_table_name(default_table)
     except Exception as e:
-        logging.error(f"[main] prompting for main table name --> {e}")
+        logging.error(f"\n[main] prompting for main table name --> {e}")
         conn.close()
         return
 
