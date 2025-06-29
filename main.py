@@ -8,9 +8,9 @@ import sqlite3
 import logging
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
 
-from cli import cli_menu, prompt_main_table_name
-from prepare import drop_tables
-from input_pipeline import dataset_pipeline
+from src.cli import cli_menu, prompt_main_table_name
+from src.prepare import drop_tables
+from src.input_pipeline import dataset_pipeline
 
 def main():
     """
