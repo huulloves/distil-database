@@ -1,6 +1,7 @@
 ''' 
     prints a summary of the database.
 '''
+import logging
 
 def print_database_summary(conn, main_table_name):
     cursor = conn.cursor()
@@ -25,7 +26,7 @@ def print_database_summary(conn, main_table_name):
             for row in rows:
                 print(f"      {row}")
         else:
-            print("\n[warning] no data")
+            logging.warning("    no data")
 
     # aggregates from main table
     print("\naggregates from main table:")
