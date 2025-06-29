@@ -48,7 +48,7 @@ def main():
     try:
         main_table_name = prompt_main_table_name(default_table)
     except Exception as e:
-        logging.error(f"\n[main] prompting for main table name --> {e}")
+        logging.error(f"[main] prompting for main table name --> {e}")
         conn.close()
         return
 

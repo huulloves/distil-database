@@ -3,6 +3,7 @@
     2. creates 3nf tables: country, city, location, and a main table (with dynamic columns).
     returns success boolean.
 '''
+import logging
 
 def drop_tables(conn):
     cursor = conn.cursor()
@@ -11,13 +12,13 @@ def drop_tables(conn):
     for table in tables:
         cursor.execute(f'DROP TABLE IF EXISTS "{table}"')
     conn.commit()
-    print("\n[drop_tables()] all tables dropped.")
+    logging.info("[drop_tables()] all tables dropped.")
 
 def create_tables(conn, headers, main_table_name):
     success = False
     try:
         cursor = conn.cursor()
-        print("\n[create_tables()] creating tables...")
+        logging.info("[create_tables()] creating tables...")
         cursor.execute('CREATE TABLE IF NOT EXISTS country (country_id INTEGER PRIMARY KEY, country_name TEXT UNIQUE)')
         cursor.execute('CREATE TABLE IF NOT EXISTS city (city_id INTEGER PRIMARY KEY, city_name TEXT UNIQUE)')
         cursor.execute('''CREATE TABLE IF NOT EXISTS location (
@@ -37,8 +38,8 @@ def create_tables(conn, headers, main_table_name):
             {cols_sql},
             FOREIGN KEY(location_id) REFERENCES location(location_id)
         )''')
-        print(f"    main table '{main_table_name}' and supporting tables created.")
+        logging.info(f"    main table '{main_table_name}' and supporting tables created.")
         success = True
     except Exception as e:
-        print(f"    [warning] {e}")
+        logging.warning(f"    [warning] {e}")
     return success
