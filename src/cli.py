@@ -18,7 +18,7 @@ def cli_menu(conn, main_table_name):
     main cli menu loop for interacting with the database.
     """
     while True:
-        print("choose an option:")
+        print("\nchoose an option:")
         print("     1. list all tables")
         print("     2. query a specific table")
         print("     3. main table summary")
