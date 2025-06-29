@@ -1,5 +1,6 @@
 import pandas as pd
 import re
+import logging
 
 def clean_data(filename):
     """
@@ -8,7 +9,7 @@ def clean_data(filename):
     """
 
     try:
-        print("\n[clean_data()] starting...")
+        logging.info("[clean_data()] starting...")
 
         df = pd.read_csv(filename, encoding='utf-8')
         df.drop_duplicates(inplace=True)
@@ -51,12 +52,12 @@ def clean_data(filename):
         # append extension columns to headers
         final_headers = list(df.columns)
 
-        print(f"    columns after processing extensions: {final_headers}")
-        print(f"    number of rows: {len(df)}")
-        print("    data cleaning complete")
+        logging.info(f"columns after processing extensions: {final_headers}")
+        logging.info(f"number of rows: {len(df)}")
+        logging.info("data cleaning complete")
 
         return final_headers, df.values.tolist(), True
 
     except Exception as e:
-        print(f"    [error] {e}")
+        logging.error(f"[error] {e}")
         return [], [], False
