@@ -25,7 +25,7 @@ def main():
 
     db_path = input("\nenter database name (default: database-content.db): ").strip().lower()
     if not db_path:
-        db_path = 'database-content.db'
+        db_path = 'distil-database-content.db'
 
     try:
         conn = sqlite3.connect(db_path)
